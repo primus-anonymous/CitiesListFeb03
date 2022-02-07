@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +16,8 @@ import com.neocaptainnemo.citieslistfeb03.domain.City;
 import com.neocaptainnemo.citieslistfeb03.ui.list.CitiesListFragment;
 
 public class CityDetailsFragment extends Fragment {
+
+    public static final String TAG = "CityDetailsFragment";
 
     private static final String ARG_CITY = "ARG_CITY";
     private ImageView coatOfArms;
@@ -35,6 +38,11 @@ public class CityDetailsFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -42,15 +50,28 @@ public class CityDetailsFragment extends Fragment {
 
         title = view.findViewById(R.id.title);
 
-        getParentFragmentManager()
-                .setFragmentResultListener(CitiesListFragment.CITY_SELECTED, getViewLifecycleOwner(), new FragmentResultListener() {
-                    @Override
-                    public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                        City city = result.getParcelable(CitiesListFragment.SELECTED_CITY_BUNDLE);
+        view.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-                        updateCity(city);
-                    }
-                });
+//                getParentFragmentManager()
+//                        .popBackStack("backstack1", 0);
+
+                Fragment fragment = getParentFragmentManager().findFragmentByTag(CityDetailsFragment.TAG);
+
+                if (fragment instanceof CityDetailsFragment) {
+
+                }
+
+                if (fragment != null) {
+                    getParentFragmentManager()
+                            .beginTransaction()
+                            .remove(fragment)
+                            .commit();
+                }
+
+            }
+        });
 
         Bundle arguments = getArguments();
 
@@ -60,11 +81,52 @@ public class CityDetailsFragment extends Fragment {
             updateCity(city);
 
         }
+
+        getChildFragmentManager()
+                .setFragmentResultListener(CitiesListFragment.CITY_SELECTED, getViewLifecycleOwner(), new FragmentResultListener() {
+                    @Override
+                    public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                        Toast.makeText(requireContext(), "Result", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.child_container, new CitiesListFragment())
+                .commit();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Toast.makeText(requireContext(), "Started", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        Toast.makeText(requireContext(), "Stopped", Toast.LENGTH_SHORT).show();
     }
 
     private void updateCity(City city) {
         coatOfArms.setImageResource(city.getImage());
 
         title.setText(city.getName());
+    }
+
+    public void showHello() {
+        Toast.makeText(requireContext(), "City Details Hello!", Toast.LENGTH_SHORT).show();
     }
 }
