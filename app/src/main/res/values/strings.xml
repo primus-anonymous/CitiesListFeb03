@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">CitiesListFeb03</string>
     <string name="remove">Remove</string>
+    <string name="action_add">Add</string>
+    <string name="action_clear_all">Clear All</string>
+    <string name="action_share">Share</string>
+    <string name="cities_list">Cities</string>
+    <string name="details">City Details</string>
+    <string name="open_drawer">Open Drawer</string>
+    <string name="close_drawer">Close Drawer</string>
+    <string name="action_search">Search</string>
+    <string name="action_copy_to_clipboard">Copy To Clipboard</string>
 </resources>

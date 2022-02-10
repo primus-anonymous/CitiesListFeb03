@@ -1,6 +1,9 @@
 package com.neocaptainnemo.citieslistfeb03.ui.details;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -8,11 +11,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 
 import com.neocaptainnemo.citieslistfeb03.R;
 import com.neocaptainnemo.citieslistfeb03.domain.City;
+import com.neocaptainnemo.citieslistfeb03.ui.MainActivity;
+import com.neocaptainnemo.citieslistfeb03.ui.NavDrawable;
 import com.neocaptainnemo.citieslistfeb03.ui.list.CitiesListFragment;
 
 public class CityDetailsFragment extends Fragment {
@@ -37,39 +44,58 @@ public class CityDetailsFragment extends Fragment {
         return fragment;
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+
+        if (requireActivity() instanceof NavDrawable) {
+            ((NavDrawable)requireActivity()).setAppBar(toolbar);
+        }
+
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.action_share) {
+                    Toast.makeText(requireContext(), "Shared", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+
+                return false;
+            }
+        });
+
         coatOfArms = view.findViewById(R.id.coat_of_arms);
 
         title = view.findViewById(R.id.title);
 
-        view.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
+        title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                PopupMenu popupMenu = new PopupMenu(requireContext(), view);
 
-//                getParentFragmentManager()
-//                        .popBackStack("backstack1", 0);
+                popupMenu.getMenuInflater().inflate(R.menu.menu_title_pop_up, popupMenu.getMenu());
 
-                Fragment fragment = getParentFragmentManager().findFragmentByTag(CityDetailsFragment.TAG);
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        if (item.getItemId() == R.id.action_search) {
+                            Toast.makeText(requireContext(), "Search", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
 
-                if (fragment instanceof CityDetailsFragment) {
+                        if (item.getItemId() == R.id.action_copy_to_clipboard) {
+                            Toast.makeText(requireContext(), "Clipboard", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
 
-                }
+                        return false;
+                    }
+                });
 
-                if (fragment != null) {
-                    getParentFragmentManager()
-                            .beginTransaction()
-                            .remove(fragment)
-                            .commit();
-                }
-
+                popupMenu.show();
             }
         });
 
@@ -81,43 +107,6 @@ public class CityDetailsFragment extends Fragment {
             updateCity(city);
 
         }
-
-        getChildFragmentManager()
-                .setFragmentResultListener(CitiesListFragment.CITY_SELECTED, getViewLifecycleOwner(), new FragmentResultListener() {
-                    @Override
-                    public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                        Toast.makeText(requireContext(), "Result", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        getChildFragmentManager()
-                .beginTransaction()
-                .replace(R.id.child_container, new CitiesListFragment())
-                .commit();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        Toast.makeText(requireContext(), "Started", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        Toast.makeText(requireContext(), "Stopped", Toast.LENGTH_SHORT).show();
     }
 
     private void updateCity(City city) {
